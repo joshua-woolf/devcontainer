@@ -14,14 +14,6 @@ ENV SHELL=/bin/zsh
 ENV TZ="$TZ"
 ENV VISUAL=nano
 
-RUN mkdir -p /home/${USERNAME}/.history /workspace  && \
-  chown -R ${USERNAME}:${USERNAME} /workspace
-
-COPY dotfiles/ /home/${USERNAME}/
-COPY post-create.sh /usr/local/bin/
-
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/
-
 # Install APT Packages
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
@@ -115,6 +107,16 @@ RUN ARCH=$(dpkg --print-architecture) && \
   tar -zxvf "starship-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz" && \
   mv starship /usr/local/bin/ && \
   rm "starship-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
+
+# Setup Directories, Configuration and Ownership
+
+RUN mkdir -p /home/${USERNAME}/.history /workspace  && \
+  chown -R ${USERNAME}:${USERNAME} /workspace
+
+COPY dotfiles/ /home/${USERNAME}/
+COPY scripts/ /usr/local/bin/
+
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/
 
 USER ${USERNAME}
 
