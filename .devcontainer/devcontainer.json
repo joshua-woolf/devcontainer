@@ -1,0 +1,38 @@
+{
+  "name": "My Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "GIT_DELTA_VERSION": "0.18.2",
+      "GITUI_VERSION": "0.27.0",
+      "K9S_VERSION": "0.50.9",
+      "KUSTOMIZE_VERSION": "5.7.1",
+      "LAZYDOCKER_VERSION": "0.24.1",
+      "TZ": "Africa/Johannesburg",
+      "USERNAME": "vscode"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/dotnet:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/git-lfs:1": {
+      "autoPull": false
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
+  },
+  "postCreateCommand": "bash /usr/local/bin/post-create.sh",
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated"
+}

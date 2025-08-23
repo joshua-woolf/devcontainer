@@ -1,0 +1,49 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+add_newline = false
+scan_timeout = 10
+
+format = """
+(fg:#1C0026)\
+$directory\
+[\ue0b0](fg:#1C0026 bg:#29044D)\
+$kubernetes\
+[\ue0b0](fg:#29044D bg:#391680)\
+$git_branch\
+$git_status\
+[\ue0b0](fg:#391680 bg:#5545BF)\
+$status\
+[\ue0b0](fg:#5545BF bg:#8A97ED)\
+$cmd_duration\
+[\ue0b0](fg:#8A97ED)
+"""
+
+[cmd_duration]
+style = "italic fg:#000000 bg:#8A97ED"
+min_time = 1
+format = "[ $duration ]($style)"
+
+[directory]
+style = "fg:#AAAAAA bg:#1C0026"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = "\uf418"
+style = "fg:#000000 bg:#391680"
+format = "[ $symbol $branch ]($style)"
+
+[git_status]
+style = "fg:#000000 bg:#391680"
+format = "[$all_status$ahead_behind ]($style)"
+
+[kubernetes]
+style = "fg:#000000 bg:#29044D"
+disabled = false
+format = "[ $context(::$namespace) ]($style)"
+
+[status]
+style = "bold fg:#FF0000 bg:#5545BF"
+disabled = false
+format = "[ $status ]($style)"
