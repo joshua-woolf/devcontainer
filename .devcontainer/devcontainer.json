@@ -18,10 +18,7 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "moby": true,
-      "dockerDashComposeVersion": "v2"
-    }
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "mounts": [
     "source=dev-cache-claude-${devcontainerId},target=/home/vscode/.claude,type=volume",
