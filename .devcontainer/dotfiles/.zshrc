@@ -1,4 +1,4 @@
-HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+HISTFILE=${HOME}/.history/.zsh_history
 SAVEHIST=8192
 HISTSIZE=8192
 
@@ -29,8 +29,6 @@ alias ls="command ls -F -G"
 alias ll="ls -alF -G"
 alias path='echo -e ${PATH//:/\\n}'
 
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-source /usr/share/doc/fzf/examples/completion.zsh
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 

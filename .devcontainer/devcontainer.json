@@ -1,5 +1,5 @@
 {
-  "name": "My Dev Container",
+  "name": "dev",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
@@ -31,6 +31,15 @@
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/devcontainers/features/terraform:1": {}
   },
+  "mounts": [
+    "source=dev-cache-claude-${devcontainerId},target=/home/node/.claude,type=volume",
+    "source=dev-cache-history-${devcontainerId},target=/home/node/.history,type=volume",
+    "source=dev-cache-kube-${devcontainerId},target=/home/node/.kube,type=volume",
+    "source=dev-cache-npm-${devcontainerId},target=/home/node/.npm,type=volume",
+    "source=dev-cache-nuget-${devcontainerId},target=/home/node/.nuget,type=volume",
+    "source=dev-cache-pnpm-${devcontainerId},target=/home/node/.local/share/pnpm,type=volume",
+    "source=dev-cache-yarn-${devcontainerId},target=/home/node/.yarn,type=volume"
+  ],
   "postCreateCommand": "bash /usr/local/bin/post-create.sh",
   "remoteUser": "vscode",
   "workspaceFolder": "/workspace",
