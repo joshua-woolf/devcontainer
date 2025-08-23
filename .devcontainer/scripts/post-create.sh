@@ -3,20 +3,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-### Fix Ownership
-
-sudo chown -R $(whoami):$(whoami) "/home/$(whoami)"
-
-### Install Dependencies
-
-echo "Updating NPM..."
-npm install -g npm@latest
-
-echo "Installing Claude Code..."
-npm install -g @anthropic-ai/claude-code@latest
-
-### Setup Firewall
-
 # 1. Extract Docker DNS info BEFORE any flushing
 DOCKER_DNS_RULES=$(sudo iptables-save -t nat | grep "127\.0\.0\.11" || true)
 

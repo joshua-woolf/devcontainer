@@ -29,6 +29,11 @@ alias ls="command ls -F -G"
 alias ll="ls -alF -G"
 alias path='echo -e ${PATH//:/\\n}'
 
+export NVM_DIR=${HOME}/.nvm
+
+source $NVM_DIR/nvm.sh
+source $NVM_DIR/bash_completion
+
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 

@@ -15,8 +15,11 @@ ARG USERNAME=vscode
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEVCONTAINER=true
-ENV DOTNET_ROOT="/usr/local/dotnet"
+ENV DOTNET_ROOT=/usr/local/dotnet
 ENV EDITOR=nano
+ENV NODE_VERSION=node
+ENV NVM_DIR="/home/${USERNAME}/.nvm"
+ENV NVM_SYMLINK_CURRENT=true
 ENV PATH="${PATH}:${DOTNET_ROOT}"
 ENV SHELL=/bin/zsh
 ENV TZ="$TZ"
@@ -42,6 +45,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   libxml2-dev \
   libxmlsec1-dev \
   pigz \
+  pipx \
+  python-is-python3 \
   python3-dev \
   python3-doc \
   python3-pip \
@@ -80,6 +85,21 @@ RUN curl -L https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
   rm dotnet-install.sh && \
   ln -s /usr/local/dotnet/dotnet /usr/local/bin/dotnet && \
   dotnet workload install aspire
+
+# Install Python Tools
+
+RUN pipx install --force --system-site-packages --pip-args '--no-cache-dir --force-reinstall' \
+  autopep8 \
+  bandit \
+  black \
+  flake8 \
+  mypy \
+  pipenv \
+  pycodestyle \
+  pydocstyle \
+  pytest \
+  virtualenv \
+  yapf
 
 # Install kubectl
 
@@ -226,16 +246,34 @@ RUN ARCH=$(dpkg --print-architecture) && \
   mv starship /usr/local/bin/ && \
   rm "starship-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
-# Setup Directories, Configuration and Ownership
+USER ${USERNAME}
 
-RUN mkdir -p /home/${USERNAME}/.history /workspace  && \
-  chown -R ${USERNAME}:${USERNAME} /workspace
+# Install Node
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+USER root
+
+RUN \. /home/${USERNAME}/.nvm/nvm.sh && \
+  nvm alias default node && \
+  npm install -g npm@latest && \
+  npm install -g pnpm@latest
+
+USER ${USERNAME}
+
+# Install Claude Code
+
+RUN \. /home/${USERNAME}/.nvm/nvm.sh && \
+  npm install -g @anthropic-ai/claude-code@latest
+
+# Setup Directories, Configuration and Ownership
 
 COPY dotfiles/ /home/${USERNAME}/
 COPY scripts/ /usr/local/bin/
 
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/
+RUN sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/
 
-USER ${USERNAME}
+RUN sudo mkdir -p /home/${USERNAME}/.history /workspace && \
+  sudo chown -R ${USERNAME}:${USERNAME} /workspace
 
 WORKDIR /workspace

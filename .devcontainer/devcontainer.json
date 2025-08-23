@@ -21,9 +21,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true,
       "dockerDashComposeVersion": "v2"
-    },
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/python:1": {}
+    }
   },
   "mounts": [
     "source=dev-cache-claude-${devcontainerId},target=/home/vscode/.claude,type=volume",
