@@ -35,6 +35,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   git-lfs \
   hey \
   ipset \
+  iptables \
   libbz2-dev \
   libffi-dev \
   libgdbm-dev \
@@ -246,6 +247,50 @@ RUN ARCH=$(dpkg --print-architecture) && \
   mv starship /usr/local/bin/ && \
   rm "starship-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
+# Install Docker and Docker Compose
+
+ENV DOCKER_BUILDX_VERSION=0.27.0
+ENV DOCKER_COMPOSE_VERSION=2.39.2
+ENV DOCKER_COMPOSE_SWITCH_VERSION=1.0.5
+
+RUN . /etc/os-release && \
+  ARCH="$(dpkg --print-architecture)" && \
+  update-alternatives --set iptables /usr/sbin/iptables-legacy && \
+  update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy && \
+  # \
+  curl -sSL "https://packages.microsoft.com/keys/microsoft.asc" | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
+  echo "deb [arch=${ARCH} signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-${ID}-${VERSION_CODENAME}-prod ${VERSION_CODENAME} main" > /etc/apt/sources.list.d/microsoft.list && \
+  # \
+  apt-get update && apt-get install -y --no-install-recommends \
+  moby-buildx \
+  moby-cli \
+  moby-compose \
+  moby-engine \
+  && apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  case "${ARCH}" in amd64) COMPOSE_ARCH=x86_64 ;; arm64) COMPOSE_ARCH=aarch64 ;; *) esac && \
+  DOCKER_COMPOSE_PATH="/usr/local/bin/docker-compose" && \
+  DOCKER_CLI_PLUGINS_DIR="/usr/libexec/docker/cli-plugins" && \
+  mkdir -p "${DOCKER_CLI_PLUGINS_DIR}" && \
+  curl -fsSL "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${COMPOSE_ARCH}" -o "${DOCKER_COMPOSE_PATH}" && \
+  chmod +x "${DOCKER_COMPOSE_PATH}" && \
+  cp "${DOCKER_COMPOSE_PATH}" "${DOCKER_CLI_PLUGINS_DIR}" && \
+  DOCKER_COMPOSE_SWITCH_PATH="/usr/local/bin/compose-switch" && \
+  curl -fsSL "https://github.com/docker/compose-switch/releases/download/v${DOCKER_COMPOSE_SWITCH_VERSION}/docker-compose-linux-${ARCH}" -o "${DOCKER_COMPOSE_SWITCH_PATH}" && \
+  chmod +x "${DOCKER_COMPOSE_SWITCH_PATH}" && \
+  NEW_DOCKER_COMPOSE_PATH="/usr/local/bin/docker-compose-v1" && \
+  mv "${DOCKER_COMPOSE_PATH}" "${NEW_DOCKER_COMPOSE_PATH}" && \
+  update-alternatives --install ${DOCKER_COMPOSE_PATH} docker-compose /usr/local/bin/compose-switch 99 && \
+  update-alternatives --install ${DOCKER_COMPOSE_PATH} docker-compose "${NEW_DOCKER_COMPOSE_PATH}" 1 && \
+  DOCKER_BUILDX_PATH="/usr/local/bin/docker-buildx" && \
+  curl -fsSL "https://github.com/docker/buildx/releases/download/v${DOCKER_BUILDX_VERSION}/buildx-v${DOCKER_BUILDX_VERSION}.linux-${ARCH}" -o "${DOCKER_BUILDX_PATH}" && \
+  chmod +x "${DOCKER_BUILDX_PATH}" && \
+  mv "${DOCKER_BUILDX_PATH}" "${DOCKER_CLI_PLUGINS_DIR}" && \
+  chown -R ${USERNAME}:${USERNAME} /usr/libexec/docker/ && \
+  usermod -aG docker ${USERNAME}
+
+ENV container=docker
+ENV DOCKER_BUILDKIT=1
 USER ${USERNAME}
 
 # Install Node
@@ -269,11 +314,16 @@ RUN \. /home/${USERNAME}/.nvm/nvm.sh && \
 # Setup Directories, Configuration and Ownership
 
 COPY dotfiles/ /home/${USERNAME}/
-COPY scripts/ /usr/local/bin/
+COPY scripts/post-create.sh /usr/local/bin/
+COPY scripts/docker-init.sh /usr/local/share/
+
+RUN sudo chmod +x /usr/local/bin/post-create.sh /usr/local/share/docker-init.sh
+
+RUN sudo chown -R ${USERNAME}:${USERNAME} /usr/local/share/docker-init.sh
 
 RUN sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/
 
 RUN sudo mkdir -p /home/${USERNAME}/.history /workspace && \
-  sudo chown -R ${USERNAME}:${USERNAME} /workspace
+  sudo chown -R ${USERNAME}:${USERNAME} /workspace/
 
 WORKDIR /workspace

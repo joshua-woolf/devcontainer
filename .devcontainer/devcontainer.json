@@ -17,9 +17,6 @@
       "USERNAME": "vscode"
     }
   },
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
   "mounts": [
     "source=dev-cache-claude-${devcontainerId},target=/home/vscode/.claude,type=volume",
     "source=dev-cache-history-${devcontainerId},target=/home/vscode/.history,type=volume",
@@ -27,9 +24,12 @@
     "source=dev-cache-npm-${devcontainerId},target=/home/vscode/.npm,type=volume",
     "source=dev-cache-nuget-${devcontainerId},target=/home/vscode/.nuget,type=volume",
     "source=dev-cache-pnpm-${devcontainerId},target=/home/vscode/.local/share/pnpm,type=volume",
-    "source=dev-cache-yarn-${devcontainerId},target=/home/vscode/.yarn,type=volume"
+    "source=dev-cache-yarn-${devcontainerId},target=/home/vscode/.yarn,type=volume",
+    "source=dind-var-lib-docker-${devcontainerId},target=/var/lib/docker,type=volume"
   ],
-  "postCreateCommand": "bash /usr/local/bin/post-create.sh",
+  // "postCreateCommand": "bash /usr/local/bin/post-create.sh && sudo /usr/local/share/docker-init.sh",
+  "postCreateCommand": "sudo /usr/local/share/docker-init.sh",
+  "privileged": true,
   "remoteUser": "vscode",
   "runArgs": [
     "--cap-add=NET_ADMIN",
