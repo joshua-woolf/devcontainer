@@ -10,11 +10,14 @@ sudo chown -R vscode:vscode /home/vscode/
 # Configure Firewall
 
 ALLOWED_DOMAINS=(
-    "registry.npmjs.org"
-    "api.anthropic.com"
-    "sentry.io"
-    "statsig.anthropic.com"
-    "statsig.com"
+  "registry.npmjs.org"
+  "api.anthropic.com"
+  "sentry.io"
+  "statsig.anthropic.com"
+  "statsig.com"
+)
+
+ALLOWED_IPS=(
 )
 
 sudo iptables -F
@@ -37,15 +40,20 @@ sudo ipset create allowed-domains hash:net
 gh_ranges=$(curl -s https://api.github.com/meta)
 
 while read -r cidr; do
-    sudo ipset add allowed-domains "$cidr"
+  sudo ipset add allowed-domains "$cidr"
 done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
 
 for domain in "${ALLOWED_DOMAINS[@]}"; do
-    ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
-    
-    while read -r ip; do
-        sudo ipset add allowed-domains "$ip"
-    done < <(echo "$ips")
+  ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
+
+  while read -r ip; do
+    sudo ipset add allowed-domains "$ip"
+  done < <(echo "$ips")
+done
+
+# Add allowed IPs and CIDRs to the ipset
+for ip_cidr in "${ALLOWED_IPS[@]}"; do
+  sudo ipset add allowed-domains "$ip_cidr"
 done
 
 HOST_IP=$(ip route | grep default | cut -d" " -f3)
