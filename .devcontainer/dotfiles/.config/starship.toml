@@ -5,15 +5,17 @@ scan_timeout = 10
 
 format = """
 (fg:#1C0026)\
-$directory\
+$shell\
 [\ue0b0](fg:#1C0026 bg:#29044D)\
-$kubernetes\
+$directory\
 [\ue0b0](fg:#29044D bg:#391680)\
+$kubernetes\
+[\ue0b0](fg:#391680 bg:#5545BF)\
 $git_branch\
 $git_status\
-[\ue0b0](fg:#391680 bg:#5545BF)\
+[\ue0b0](fg:#5545BF bg:#6A5ACD)\
 $status\
-[\ue0b0](fg:#5545BF bg:#8A97ED)\
+[\ue0b0](fg:#6A5ACD bg:#8A97ED)\
 $cmd_duration\
 [\ue0b0](fg:#8A97ED)
 """
@@ -24,26 +26,31 @@ min_time = 1
 format = "[ $duration ]($style)"
 
 [directory]
-style = "fg:#AAAAAA bg:#1C0026"
+style = "fg:#CCCCCC bg:#29044D"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 
 [git_branch]
 symbol = "\uf418"
-style = "fg:#000000 bg:#391680"
+style = "fg:#000000 bg:#5545BF"
 format = "[ $symbol $branch ]($style)"
 
 [git_status]
-style = "fg:#000000 bg:#391680"
+style = "fg:#000000 bg:#5545BF"
 format = "[$all_status$ahead_behind ]($style)"
 
 [kubernetes]
-style = "fg:#000000 bg:#29044D"
+style = "fg:#CCCCCC bg:#391680"
 disabled = false
 format = "[ $context(::$namespace) ]($style)"
 
+[shell]
+style = "fg:#CCCCCC bg:#1C0026"
+disabled = false
+format = "[ $indicator ]($style)"
+
 [status]
-style = "bold fg:#FF0000 bg:#5545BF"
+style = "bold fg:#FFA500 bg:#6A5ACD"
 disabled = false
 format = "[ $status ]($style)"
