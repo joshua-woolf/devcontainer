@@ -18,17 +18,26 @@
     }
   },
   "mounts": [
+    "source=dev-cache-apt-${devcontainerId},target=/var/cache/apt,type=volume",
+    "source=dev-cache-apt-lib-${devcontainerId},target=/var/lib/apt,type=volume",
+    "source=dev-cache-aws-${devcontainerId},target=/home/vscode/.aws,type=volume",
+    "source=dev-cache-azure-${devcontainerId},target=/home/vscode/.azure,type=volume",
     "source=dev-cache-claude-${devcontainerId},target=/home/vscode/.claude,type=volume",
+    "source=dev-cache-docker-${devcontainerId},target=/var/lib/docker,type=volume",
+    "source=dev-cache-helm-${devcontainerId},target=/home/vscode/.cache/helm,type=volume",
+    "source=dev-cache-helm-config-${devcontainerId},target=/home/vscode/.config/helm,type=volume",
     "source=dev-cache-history-${devcontainerId},target=/home/vscode/.history,type=volume",
     "source=dev-cache-kube-${devcontainerId},target=/home/vscode/.kube,type=volume",
     "source=dev-cache-npm-${devcontainerId},target=/home/vscode/.npm,type=volume",
     "source=dev-cache-nuget-${devcontainerId},target=/home/vscode/.nuget,type=volume",
+    "source=dev-cache-pip-${devcontainerId},target=/home/vscode/.cache/pip,type=volume",
+    "source=dev-cache-pipx-${devcontainerId},target=/home/vscode/.local/share/pipx,type=volume",
+    "source=dev-cache-pipx-cache-${devcontainerId},target=/home/vscode/.cache/pipx,type=volume",
     "source=dev-cache-pnpm-${devcontainerId},target=/home/vscode/.local/share/pnpm,type=volume",
-    "source=dev-cache-yarn-${devcontainerId},target=/home/vscode/.yarn,type=volume",
-    "source=dev-cache-docker-${devcontainerId},target=/var/lib/docker,type=volume"
+    "source=dev-cache-terraform-${devcontainerId},target=/home/vscode/.terraform.d,type=volume",
+    "source=dev-cache-yarn-${devcontainerId},target=/home/vscode/.yarn,type=volume"
   ],
-  // "postCreateCommand": "bash /usr/local/bin/post-create.sh && sudo /usr/local/share/docker-init.sh",
-  "postCreateCommand": "sudo /usr/local/share/docker-init.sh",
+  "postCreateCommand": "sudo /usr/local/share/docker-init.sh && bash /usr/local/bin/post-create.sh",
   "privileged": true,
   "remoteUser": "vscode",
   "runArgs": [

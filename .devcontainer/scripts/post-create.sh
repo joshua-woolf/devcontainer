@@ -3,6 +3,12 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Update Ownership
+
+sudo chown -R vscode:vscode /home/vscode/
+
+# Configure Firewall
+
 # 1. Extract Docker DNS info BEFORE any flushing
 DOCKER_DNS_RULES=$(sudo iptables-save -t nat | grep "127\.0\.0\.11" || true)
 
