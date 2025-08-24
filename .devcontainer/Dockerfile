@@ -1,5 +1,8 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+ARG DOCKER_BUILDX_VERSION=0.27.0
+ARG DOCKER_COMPOSE_VERSION=2.39.2
+ARG DOCKER_COMPOSE_SWITCH_VERSION=1.0.5
 ARG DOTNET_VERSION=9.0
 ARG GIT_DELTA_VERSION=0.18.2
 ARG GITUI_VERSION=0.27.0
@@ -13,8 +16,10 @@ ARG TERRAFORM_VERSION=1.13.0
 ARG TZ=Africa/Johannesburg
 ARG USERNAME=vscode
 
+ENV container=docker
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEVCONTAINER=true
+ENV DOCKER_BUILDKIT=1
 ENV DOTNET_ROOT=/usr/local/dotnet
 ENV EDITOR=nano
 ENV NODE_VERSION=node
@@ -58,7 +63,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
   uuid-dev \
   zsh-autosuggestions \
   zsh-syntax-highlighting \
-  && apt-get clean && rm -rf /var/lib/apt/lists/*
+  && apt-get autoremove -y \
+  && apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 # Install PowerShell
 
@@ -249,9 +256,6 @@ RUN ARCH=$(dpkg --print-architecture) && \
 
 # Install Docker and Docker Compose
 
-ENV DOCKER_BUILDX_VERSION=0.27.0
-ENV DOCKER_COMPOSE_VERSION=2.39.2
-ENV DOCKER_COMPOSE_SWITCH_VERSION=1.0.5
 
 RUN . /etc/os-release && \
   ARCH="$(dpkg --print-architecture)" && \
@@ -289,8 +293,6 @@ RUN . /etc/os-release && \
   chown -R ${USERNAME}:${USERNAME} /usr/libexec/docker/ && \
   usermod -aG docker ${USERNAME}
 
-ENV container=docker
-ENV DOCKER_BUILDKIT=1
 USER ${USERNAME}
 
 # Install Node
